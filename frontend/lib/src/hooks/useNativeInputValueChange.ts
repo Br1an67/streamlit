@@ -32,6 +32,11 @@ interface UseNativeInputValueChangeProps {
   uiValue: string | null
   maxChars?: number
   onChange: (e: OnInputChangeEventType) => void
+  /** Called after onChange when a native value change is detected and accepted.
+   * Use this to immediately commit the value to the widget manager, since
+   * programmatic changes (e.g. password manager autofill) won't be followed
+   * by a user-initiated blur or Enter press. */
+  onCommit?: (value: string) => void
 }
 
 /**
@@ -45,21 +50,30 @@ export default function useNativeInputValueChange({
   uiValue,
   maxChars = 0,
   onChange,
-}: UseNativeInputValueChangeProps): void {
+  onCommit,
+}: UseNativeInputValueChangeProps): () => void {
   const uiValueRef = useRef(uiValue ?? "")
   const onChangeRef = useRef(onChange)
+  const onCommitRef = useRef(onCommit)
   const pendingNativeSyncRef = useRef(false)
+  /** True when the pending native event is a "change" event, which signals
+   *  a completed value change (e.g. programmatic fill) rather than ongoing
+   *  user typing. */
+  const pendingChangeEventRef = useRef(false)
 
   useLayoutEffect(() => {
     uiValueRef.current = uiValue ?? ""
     onChangeRef.current = onChange
-  }, [onChange, uiValue])
+    onCommitRef.current = onCommit
+  }, [onChange, onCommit, uiValue])
 
   const handleDeferredNativeValueChange = useCallback((): void => {
     if (!pendingNativeSyncRef.current) {
       return
     }
     pendingNativeSyncRef.current = false
+    const wasChangeEvent = pendingChangeEventRef.current
+    pendingChangeEventRef.current = false
 
     const domValue = inputRef.current?.value ?? ""
     const currentUiValue = uiValueRef.current
@@ -81,6 +95,14 @@ export default function useNativeInputValueChange({
     // callback is dequeued, which holds for typical React 18 behavior but is
     // subtle enough that we document it explicitly for future maintainers.
     if (domValue === currentUiValue) {
+      // React already processed the onChange for this event. For "input"
+      // events (fired on each keystroke), the normal dirty→blur→commit flow
+      // applies. For "change" events (fired by password managers after
+      // completing a fill, or natively on blur), commit immediately since
+      // there may not be a subsequent user-initiated blur.
+      if (wasChangeEvent) {
+        onCommitRef.current?.(domValue)
+      }
       return
     }
 
@@ -91,14 +113,17 @@ export default function useNativeInputValueChange({
     }
 
     onChangeRef.current({ target: { value: domValue } })
+    onCommitRef.current?.(domValue)
   }, [inputRef, maxChars])
 
   const { clear: clearNativeSyncTimeout, restart: restartNativeSyncTimeout } =
-    useTimeout(handleDeferredNativeValueChange, 0)
+    useTimeout(handleDeferredNativeValueChange, 0, { autoStart: false })
 
   const handleNativeValueChange = useCallback(
     (event: Event): void => {
       pendingNativeSyncRef.current = true
+      pendingChangeEventRef.current =
+        pendingChangeEventRef.current || event.type === "change"
 
       if (!event.bubbles) {
         // Non-bubbling events are invisible to React's synthetic event system,
@@ -108,14 +133,9 @@ export default function useNativeInputValueChange({
         return
       }
 
-      clearNativeSyncTimeout()
       restartNativeSyncTimeout()
     },
-    [
-      clearNativeSyncTimeout,
-      handleDeferredNativeValueChange,
-      restartNativeSyncTimeout,
-    ]
+    [handleDeferredNativeValueChange, restartNativeSyncTimeout]
   )
 
   useEffect(() => {
@@ -141,4 +161,15 @@ export default function useNativeInputValueChange({
       clearNativeSyncTimeout()
     }
   }, [clearNativeSyncTimeout, disabled, handleNativeValueChange, inputRef])
+
+  /** Clears any pending deferred reconciliation. Call from onBlur to prevent
+   *  the change-event commit from double-committing when blur already handles
+   *  the commit. */
+  const clearPending = useCallback((): void => {
+    pendingNativeSyncRef.current = false
+    pendingChangeEventRef.current = false
+    clearNativeSyncTimeout()
+  }, [clearNativeSyncTimeout])
+
+  return clearPending
 }
