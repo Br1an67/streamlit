@@ -34,9 +34,11 @@ from streamlit.elements.lib.file_uploader_utils import (
 from streamlit.elements.lib.form_utils import is_in_form
 from streamlit.elements.lib.image_utils import AtomicImage, image_to_url
 from streamlit.elements.lib.layout_utils import (
+    Height,
     LayoutConfig,
     Width,
     WidthWithoutContent,
+    validate_height,
     validate_width,
 )
 from streamlit.elements.lib.policies import check_widget_policies
@@ -556,6 +558,7 @@ class ChatMixin:
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         width: WidthWithoutContent = "stretch",
+        height: Height | None = None,
     ) -> str | None: ...
 
     @overload
@@ -575,6 +578,7 @@ class ChatMixin:
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         width: WidthWithoutContent = "stretch",
+        height: Height | None = None,
     ) -> ChatInputValue | None: ...
 
     @overload
@@ -594,6 +598,7 @@ class ChatMixin:
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         width: WidthWithoutContent = "stretch",
+        height: Height | None = None,
     ) -> ChatInputValue | None: ...
 
     @gather_metrics("chat_input")
@@ -613,6 +618,7 @@ class ChatMixin:
         args: WidgetArgs | None = None,
         kwargs: WidgetKwargs | None = None,
         width: WidthWithoutContent = "stretch",
+        height: Height | None = None,
     ) -> str | ChatInputValue | None:
         """Display a chat input widget.
 
@@ -718,6 +724,20 @@ class ChatMixin:
               fixed width. If the specified width is greater than the width of
               the parent container, the width of the widget matches the width
               of the parent container.
+
+        height : "content", "stretch", int, or None
+            The minimum height of the chat input widget. This can be one of
+            the following:
+
+            - ``None`` or ``"content"`` (default): The widget uses the default
+              single-line height and automatically expands based on the text
+              content.
+            - ``"stretch"``: The height of the widget stretches to fill the
+              available height of the parent container.
+            - An integer specifying the minimum height in pixels. The widget
+              has a fixed minimum height but still auto-expands based on text
+              content. The minimum recommended height is 68 pixels, which fits
+              a single line of text.
 
         Returns
         -------
@@ -908,6 +928,7 @@ class ChatMixin:
             accept_audio=accept_audio,
             audio_sample_rate=audio_sample_rate,
             width=width,
+            height=height,
         )
 
         if file_type:
@@ -988,7 +1009,9 @@ class ChatMixin:
         )
 
         validate_width(width)
-        layout_config = LayoutConfig(width=width)
+        if height is not None:
+            validate_height(height, allow_content=True)
+        layout_config = LayoutConfig(width=width, height=height)
 
         chat_input_proto.disabled = disabled
         if widget_state.value_changed and widget_state.value is not None:
