@@ -42,7 +42,7 @@ import {
   UploadedStatus,
   UploadFileInfo,
   UploadingStatus,
-} from "~lib/components/shared/UploadedFile/UploadFileInfo"
+} from "~lib/components/shared/UploadedFile"
 import {
   WidgetLabel,
   WidgetLabelHelpIcon,

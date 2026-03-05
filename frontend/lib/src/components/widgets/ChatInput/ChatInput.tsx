@@ -50,11 +50,11 @@ import { LOG } from "~lib/components/ChatInput/logger"
 import Icon, { DynamicIcon } from "~lib/components/shared/Icon"
 import InputInstructions from "~lib/components/shared/InputInstructions/InputInstructions"
 import Tooltip, { Placement } from "~lib/components/shared/Tooltip"
-import UploadedFileChips from "~lib/components/shared/UploadedFile/UploadedFileChips"
 import {
+  UploadedFileChips,
   UploadedStatus,
   UploadFileInfo,
-} from "~lib/components/shared/UploadedFile/UploadFileInfo"
+} from "~lib/components/shared/UploadedFile"
 import { getAccept } from "~lib/components/widgets/FileUploader/utils"
 import { FileUploadClient } from "~lib/FileUploadClient"
 import { useCalculatedDimensions } from "~lib/hooks/useCalculatedDimensions"

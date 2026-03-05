@@ -101,66 +101,6 @@ export const StyledUploadedFiles = styled.div(({ theme }) => ({
   paddingRight: theme.spacing.lg,
 }))
 
-export const StyledUploadedFilesList = styled.ul(({ theme }) => ({
-  listStyleType: "none",
-  margin: theme.spacing.none,
-  padding: theme.spacing.none,
-}))
-
-export const StyledUploadedFilesListItem = styled.li(({ theme }) => ({
-  margin: theme.spacing.none,
-  padding: theme.spacing.none,
-}))
-
-export const StyledUploadedFileData = styled.div(({ theme }) => ({
-  display: "flex",
-  alignItems: "baseline",
-  flex: 1,
-  paddingLeft: theme.spacing.lg,
-  overflow: "hidden",
-}))
-
-export const StyledUploadedFileName = styled.div<{ disabled?: boolean }>(
-  ({ theme, disabled }) => ({
-    marginRight: theme.spacing.sm,
-    marginBottom: theme.spacing.twoXS,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    color: disabled ? theme.colors.fadedText40 : theme.colors.bodyText,
-  })
-)
-
-export const StyledUploadedFile = styled.div(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  marginBottom: theme.spacing.twoXS,
-}))
-
-export const StyledErrorMessage = styled.span(({ theme }) => ({
-  marginRight: theme.spacing.twoXS,
-}))
-
-export const StyledFileIcon = styled.div<{ disabled?: boolean }>(
-  ({ theme, disabled }) => ({
-    display: "flex",
-    padding: theme.spacing.twoXS,
-    color: disabled ? theme.colors.fadedText40 : theme.colors.darkenedBgMix100,
-  })
-)
-
-export const StyledFileError = styled.small(({ theme }) => ({
-  color: theme.colors.redTextColor,
-  fontSize: theme.fontSizes.sm,
-  height: theme.fontSizes.sm,
-  lineHeight: theme.fontSizes.sm,
-  display: "flex",
-  alignItems: "center",
-  whiteSpace: "nowrap",
-}))
-
-export const StyledFileErrorIcon = styled.span({})
-
 const compactFileUploader = (theme: EmotionTheme): CSSObject => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   [StyledFileDropzoneSection as any]: {
@@ -181,35 +121,6 @@ const compactFileUploader = (theme: EmotionTheme): CSSObject => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
   [StyledUploadedFiles as any]: {
     paddingRight: theme.spacing.lg,
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
-  [StyledUploadedFile as any]: {
-    maxWidth: "inherit",
-    flex: 1,
-    alignItems: "flex-start",
-    marginBottom: theme.spacing.sm,
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
-  [StyledUploadedFileName as any]: {
-    width: theme.sizes.full,
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
-  [StyledUploadedFileData as any]: {
-    flexDirection: "column",
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
-  [StyledFileError as any]: {
-    height: "auto",
-    whiteSpace: "initial",
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
-  [StyledFileErrorIcon as any]: {
-    display: "none",
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: Replace 'any' with a more specific type.
-  [StyledUploadedFilesListItem as any]: {
-    margin: theme.spacing.none,
-    padding: theme.spacing.none,
   },
 })
 

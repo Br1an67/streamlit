@@ -16,47 +16,23 @@
 
 import { memo, ReactElement } from "react"
 
-import { UploadFileInfo } from "~lib/components/shared/UploadedFile/UploadFileInfo"
-
 import {
-  StyledUploadedFiles,
-  StyledUploadedFilesList,
-  StyledUploadedFilesListItem,
-} from "./styled-components"
-import UploadedFile from "./UploadedFile"
-import withPagination, { PaginationProps } from "./withPagination"
+  UploadedFileChips,
+  UploadFileInfo,
+} from "~lib/components/shared/UploadedFile"
+
+import { StyledUploadedFiles } from "./styled-components"
 
 export interface Props {
   items: UploadFileInfo[]
   onDelete: (id: number) => void
-  disabled: boolean
+  disabled?: boolean
 }
 
-const UploadedFileList = ({
-  items,
-  onDelete,
-  disabled,
-}: Props): ReactElement => {
-  return (
-    <StyledUploadedFilesList>
-      {items.map(file => (
-        <StyledUploadedFilesListItem key={file.id}>
-          <UploadedFile
-            fileInfo={file}
-            onDelete={onDelete}
-            disabled={disabled}
-          />
-        </StyledUploadedFilesListItem>
-      ))}
-    </StyledUploadedFilesList>
-  )
-}
-
-export const PaginatedFiles = withPagination(UploadedFileList)
-
-const UploadedFiles = (props: Props & PaginationProps): ReactElement => (
+const UploadedFiles = ({ items, onDelete, disabled }: Props): ReactElement => (
   <StyledUploadedFiles>
-    <PaginatedFiles {...props} />
+    <UploadedFileChips items={items} onDelete={onDelete} disabled={disabled} />
   </StyledUploadedFiles>
 )
+
 export default memo(UploadedFiles)
